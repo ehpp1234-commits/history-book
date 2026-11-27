@@ -25,7 +25,6 @@ export const Header: React.FC<HeaderProps> = ({
   isDarkMode,
   onThemeToggle,
   onEraJump,
-  currentEraId,
   eras,
   viewMode,
   onViewModeChange,
@@ -91,6 +90,12 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => onViewModeChange('kings')}
             >
               🤴 역대 왕 정리
+            </button>
+            <button
+              className={`tab-button ${viewMode === 'chart' ? 'active' : ''}`}
+              onClick={() => onViewModeChange('chart')}
+            >
+              📈 흥망성쇠 그래프
             </button>
           </div>
 
