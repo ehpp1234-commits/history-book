@@ -74,6 +74,66 @@
   margin-bottom: 2rem;
 }
 
+/* King-specific sections */
+.king-detail-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.king-detail-section:last-child {
+  border-bottom: none;
+}
+
+.king-detail-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.king-achievements-list,
+.king-items-list,
+.king-events-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.king-achievements-list li,
+.king-items-list li,
+.king-events-list li {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  padding: 0.75rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.6;
+}
+
+.king-achievements-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.king-items-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.king-events-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--accent-color);
+}
+
 .card-tags {
   display: flex;
   flex-wrap: wrap;
@@ -87,6 +147,17 @@
   background: var(--bg-secondary);
   padding: 0.4rem 0.8rem;
   border-radius: 14px;
+}
+
+.tag.exam-keyword {
+  background: #FFF4E6;
+  color: #D97706;
+  font-weight: 500;
+}
+
+[data-theme='dark'] .tag.exam-keyword {
+  background: #3a2e1f;
+  color: #FCD34D;
 }
 
 .related-events {
@@ -120,7 +191,6 @@
   border-bottom: none;
 }
 
-/* Hide on mobile, use BottomSheet instead */
 @media (max-width: 768px) {
   .detail-panel {
     display: none;

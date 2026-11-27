@@ -1,23 +1,39 @@
-﻿/**
- * TypeScript Type Definitions for Korean History Timeline Dashboard
- */
-
-export interface EraWatermarkLabel {
-  ko: string;
-  en: string;
-  period: string;
+﻿// King data type
+export interface KingData {
+  id: string;
+  eraId: string;
+  dynasty: string; // '고구려', '백제', '신라', '발해', '고려', '조선'
+  name: string;
+  reignStart: string; // 재위 시작 (예: "918년", "B.C. 37")
+  reignEnd: string; // 재위 종료 (예: "943년", "668년")
+  sortYear: number; // 정렬용 연도
+  order: number; // 왕 순서 (조선 1대, 2대 등)
+  keyAchievements: string[]; // 핵심 업적 (3-5개)
+  institutions: string[]; // 제도 (있는 경우)
+  books: string[]; // 서적 (있는 경우)
+  majorEvents: string[]; // 주요 사건
+  description: string; // 전체 설명
+  examKeywords: string[]; // 한능검 출제 키워드
 }
 
-// Simplified card structure for display
+// Update CardData to support both event cards and king cards
 export interface CardData {
   id: string;
-  eraId?: string; // Optional for compatibility
+  eraId?: string;
   year: string;
   weight: number;
   title: string;
   description: string;
   tags?: string[];
   relatedEvents?: string[];
+  type?: 'event' | 'king'; // Add type to distinguish
+  kingData?: KingData; // Additional king data
+}
+
+export interface EraWatermarkLabel {
+  ko: string;
+  en: string;
+  period: string;
 }
 
 export interface Era {
@@ -33,6 +49,7 @@ export interface Era {
   pattern: string;
   watermarkLabel: EraWatermarkLabel;
   cards?: CardData[];
+  kings?: KingData[]; // Add kings array for each era
 }
 
 export type CardPosition = 'upper' | 'lower';
@@ -44,7 +61,6 @@ export interface Detail {
   examPoints: string;
 }
 
-// Legacy SummaryCard - kept for backward compatibility
 export interface SummaryCard {
   id: string;
   eraId: string;
@@ -72,3 +88,5 @@ export interface ValidationError {
 export type Theme = 'dark' | 'light';
 
 export type BottomSheetState = 'closed' | 'preview' | 'open';
+
+export type ViewMode = 'events' | 'kings'; // Add view mode type

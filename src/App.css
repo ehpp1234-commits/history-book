@@ -8,18 +8,25 @@
 
 .app-main {
   flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
 }
 
-/* Smooth scrolling for era navigation */
+/* Mobile-first optimization */
+@media (max-width: 480px) {
+  .app-main {
+    /* Ensure smooth scrolling on mobile */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
 .app-main::-webkit-scrollbar {
-  height: 8px;
+  width: 10px;
 }
 
 .app-main::-webkit-scrollbar-track {
@@ -28,9 +35,15 @@ html {
 
 .app-main::-webkit-scrollbar-thumb {
   background: var(--border-color);
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 .app-main::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .app-main::-webkit-scrollbar {
+    width: 6px;
+  }
 }

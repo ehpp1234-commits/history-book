@@ -1,146 +1,378 @@
+﻿/* Timeline Container - Vertical scroll layout */
 .timeline-container {
-  position: relative;
-  width: 500vw; /* 매우 넓은 가로 스크롤 영역 */
-  height: 80vh;
-  min-height: 600px;
-}
-
-.era-background {
-  position: absolute;
-  top: 0;
+  width: 100%;
   height: 100%;
-  transition: background-color 0.3s ease;
-  opacity: 0.3;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
+/* Era Section */
+.timeline-era {
+  position: relative;
+  min-height: 400px;
+  padding: 3rem 2rem;
+  transition: background-color 0.3s ease;
+  scroll-margin-top: 150px; /* Generous margin to avoid header overlap - increased from 80px */
+}
+
+/* Dark era styling (일��� 강점기 등) */
+.timeline-era.dark-era {
+  color: #f0f0f0;
+}
+
+.timeline-era.dark-era .era-name,
+.timeline-era.dark-era .era-period {
+  color: #f0f0f0;
+}
+
+.timeline-era.dark-era .summary-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.timeline-era.dark-era .no-cards {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.timeline-era.dark-era .century-badge {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.timeline-era.dark-era .century-label {
+  color: #ffffff;
+}
+
+/* Era Watermark - large background text */
 .era-watermark {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 48px;
-  font-weight: 700;
-  opacity: 0.1;
+  font-size: clamp(80px, 15vw, 180px);
+  font-weight: 900;
+  opacity: 0.05;
   text-align: center;
   pointer-events: none;
+  user-select: none;
   white-space: nowrap;
+  color: currentColor;
+  line-height: 1;
+  z-index: 0;
+}
+
+/* Era Header */
+.era-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.era-name {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.timeline-era.dark-era .era-name {
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .era-period {
-  font-size: 24px;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   font-weight: 400;
+  margin: 0;
+  opacity: 0.8;
+  color: var(--text-secondary);
 }
 
-.timeline-axis {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--axis-color, #666);
-  transform: translateY(-50%);
+.timeline-era.dark-era .era-period {
+  color: rgba(255, 255, 255, 0.9);
 }
 
+/* Century Groups Container */
+.century-groups {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Century Group Section */
+.century-group {
+  margin-bottom: 2rem;
+}
+
+.century-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Century Badge - Bold header */
+.century-badge {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 24px;
+  backdrop-filter: blur(4px);
+}
+
+.century-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary, #1a1a1a);
+  letter-spacing: 0.02em;
+}
+
+/* Era Cards Container - Vertical List */
+.era-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Summary Card - Clean list item style */
 .summary-card {
-  position: absolute;
-  width: 200px;
-  transform: translateX(-50%);
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.summary-card.upper {
-  top: 10%;
-}
-
-.summary-card.lower {
-  bottom: 10%;
-}
-
-.summary-card.selected {
-  transform: translateX(-50%) scale(1.05);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-}
-
-.summary-card.faded {
-  opacity: 0.3;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .summary-card:hover {
-  transform: translateX(-50%) scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-color, #0066cc);
 }
 
-.card-connector {
-  position: absolute;
-  left: 50%;
-  width: 2px;
-  background: var(--connector-color, #666);
-  transform: translateX(-50%);
+.summary-card:active {
+  transform: translateY(0);
 }
 
-.summary-card.upper .card-connector {
-  top: 100%;
-  height: calc(50vh - 50% - 2px);
-}
-
-.summary-card.lower .card-connector {
-  bottom: 100%;
-  height: calc(50vh - 50% - 2px);
-}
-
-.card-content {
-  background: var(--card-bg, white);
-  border: 2px solid var(--card-border, #ddd);
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* Card Header - Year and Weight in one line */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .card-year {
-  font-size: 11px;
-  color: var(--text-secondary, #666);
-  margin-bottom: 4px;
-}
-
-.card-title {
-  font-size: 14px;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary, #000);
-  margin-bottom: 8px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--accent-color, #0066cc);
+  letter-spacing: 0.02em;
 }
 
-.card-keywords {
+.card-weight {
+  font-size: 0.8rem;
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* Card Title */
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.4;
+}
+
+/* Card Tags */
+.card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
 }
 
-.keyword {
-  font-size: 10px;
-  padding: 2px 6px;
-  background: var(--keyword-bg, #f0f0f0);
-  border-radius: 4px;
+.tag {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  background: var(--bg-secondary, #f5f5f5);
   color: var(--text-secondary, #666);
+  border-radius: 6px;
+  font-weight: 500;
 }
 
-/* 모바일 반응형 (≤430px) */
-@media (max-width: 430px) {
-  .summary-card {
-    width: 160px;
+/* No Cards Message */
+.no-cards {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary, #999);
+  font-style: italic;
+}
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  .timeline-era {
+    padding: 2.5rem 1.5rem;
+    scroll-margin-top: 140px;
   }
-  
-  .card-content {
-    padding: 8px;
+
+  .century-groups {
+    max-width: 700px;
   }
-  
-  .card-title {
-    font-size: 12px;
+}
+
+/* Mobile (≤768px) */
+@media (max-width: 768px) {
+  .timeline-era {
+    padding: 2rem 1rem;
+    min-height: 300px;
+    scroll-margin-top: 160px; /* Extra margin for mobile header */
   }
-  
+
+  .era-header {
+    margin-bottom: 1.5rem;
+  }
+
   .era-watermark {
-    font-size: 32px;
+    font-size: clamp(60px, 20vw, 120px);
   }
+
+  .century-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .century-badge {
+    padding: 0.4rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .century-label {
+    font-size: 0.875rem;
+  }
+
+  .summary-card {
+    padding: 0.875rem 1rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+}
+
+/* Small Mobile (≤430px) */
+@media (max-width: 430px) {
+  .timeline-era {
+    padding: 1.5rem 0.875rem;
+    scroll-margin-top: 180px; /* Maximum margin for small mobile */
+  }
+
+  .era-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .era-name {
+    font-size: 1.25rem;
+  }
+
+  .era-period {
+    font-size: 0.85rem;
+  }
+
+  .era-watermark {
+    font-size: clamp(50px, 25vw, 100px);
+    opacity: 0.03;
+  }
+
+  .century-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .century-badge {
+    padding: 0.35rem 0.875rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .century-label {
+    font-size: 0.8rem;
+  }
+
+  .era-cards {
+    gap: 10px;
+  }
+
+  .summary-card {
+    padding: 0.75rem 0.875rem;
+    border-radius: 10px;
+  }
+
+  .card-header {
+    margin-bottom: 0.4rem;
+  }
+
+  .card-year {
+    font-size: 0.8rem;
+  }
+
+  .card-weight {
+    font-size: 0.75rem;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme='dark'] .century-badge {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme='dark'] .century-label {
+  color: var(--text-primary, #f0f0f0);
+}
+
+[data-theme='dark'] .summary-card {
+  background: var(--bg-secondary, #2d2d2d);
+  border-color: var(--border-color, #404040);
+}
+
+[data-theme='dark'] .card-title {
+  color: var(--text-primary, #f0f0f0);
+}
+
+[data-theme='dark'] .tag {
+  background: var(--bg-primary, #1a1a1a);
+  color: var(--text-secondary, #a0a0a0);
+}
+
+/* Smooth scrolling for era navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for timeline container */
+.timeline-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.timeline-container::-webkit-scrollbar-track {
+  background: var(--bg-secondary, #f5f5f5);
+}
+
+.timeline-container::-webkit-scrollbar-thumb {
+  background: var(--border-color, #e0e0e0);
+  border-radius: 4px;
+}
+
+.timeline-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary, #666);
 }
