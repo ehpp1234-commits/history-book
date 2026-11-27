@@ -30,9 +30,12 @@ export function SearchResults({
   onResultClick,
   onSuggestedSearch 
 }: SearchResultsProps) {
-  const hasResults = kingResults.length > 0 || eventResults.length > 0;
+  // 안전한 배열 처리
+  const safeKingResults = Array.isArray(kingResults) ? kingResults.filter(item => item != null) : [];
+  const safeEventResults = Array.isArray(eventResults) ? eventResults.filter(item => item != null) : [];
+  const hasResults = safeKingResults.length > 0 || safeEventResults.length > 0;
 
-  if (!query.trim()) {
+  if (!(query || '').trim()) {
     return (
       <div className="search-empty-state">
         <div className="search-empty-icon">🔍</div>
@@ -69,84 +72,102 @@ export function SearchResults({
     );
   }
 
+  const handleResultClick = (card: CardData) => {
+    try {
+      if (card && onResultClick) {
+        onResultClick(card);
+      }
+    } catch (error) {
+      console.error('Error clicking result:', error);
+    }
+  };
+
   return (
     <div className="search-results-container">
       <div className="search-results-header">
         <span className="results-count">
-          총 {kingResults.length + eventResults.length}개 검색됨
+          총 {safeKingResults.length + safeEventResults.length}개 검색됨
         </span>
       </div>
 
-      {kingResults.length > 0 && (
+      {safeKingResults.length > 0 && (
         <section className="search-results-section">
-          <h3 className="section-title">🤴 왕 기록 ({kingResults.length})</h3>
+          <h3 className="section-title">🤴 왕 기록 ({safeKingResults.length})</h3>
           <div className="results-list">
-            {kingResults.map((king) => (
-              <div
-                key={king.id}
-                className="search-result-card king-card"
-                onClick={() => onResultClick(king)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onResultClick(king);
-                  }
-                }}
-              >
-                <div className="card-header">
-                  <span className="card-type-badge">왕</span>
-                  <span className="card-year">{king.year}</span>
-                </div>
-                <h4 className="card-title">{king.title}</h4>
-                <p className="card-preview">{king.description}</p>
-                {king.tags && king.tags.length > 0 && (
-                  <div className="card-tags-preview">
-                    {king.tags.slice(0, 3).map((tag, idx) => (
-                      <span key={idx} className="tag-mini">{tag}</span>
-                    ))}
+            {safeKingResults.map((king) => {
+              if (!king) return null;
+              
+              return (
+                <div
+                  key={king.id || Math.random()}
+                  className="search-result-card king-card"
+                  onClick={() => handleResultClick(king)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleResultClick(king);
+                    }
+                  }}
+                >
+                  <div className="card-header">
+                    <span className="card-type-badge">왕</span>
+                    <span className="card-year">{king?.year || ''}</span>
                   </div>
-                )}
-              </div>
-            ))}
+                  <h4 className="card-title">{king?.title || '제목 없음'}</h4>
+                  <p className="card-preview">{king?.description || ''}</p>
+                  {Array.isArray(king?.tags) && king.tags.length > 0 && (
+                    <div className="card-tags-preview">
+                      {king.tags.slice(0, 3).map((tag, idx) => (
+                        <span key={idx} className="tag-mini">{tag || ''}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
 
-      {eventResults.length > 0 && (
+      {safeEventResults.length > 0 && (
         <section className="search-results-section">
-          <h3 className="section-title">📅 주요 사건·전쟁 ({eventResults.length})</h3>
+          <h3 className="section-title">📅 주요 사건·전쟁 ({safeEventResults.length})</h3>
           <div className="results-list">
-            {eventResults.map((event) => (
-              <div
-                key={event.id}
-                className="search-result-card event-card"
-                onClick={() => onResultClick(event)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onResultClick(event);
-                  }
-                }}
-              >
-                <div className="card-header">
-                  <span className="card-type-badge event">사건</span>
-                  <span className="card-year">{event.year}</span>
-                </div>
-                <h4 className="card-title">{event.title}</h4>
-                <p className="card-preview">{event.description}</p>
-                {event.tags && event.tags.length > 0 && (
-                  <div className="card-tags-preview">
-                    {event.tags.slice(0, 3).map((tag, idx) => (
-                      <span key={idx} className="tag-mini">#{tag}</span>
-                    ))}
+            {safeEventResults.map((event) => {
+              if (!event) return null;
+              
+              return (
+                <div
+                  key={event.id || Math.random()}
+                  className="search-result-card event-card"
+                  onClick={() => handleResultClick(event)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleResultClick(event);
+                    }
+                  }}
+                >
+                  <div className="card-header">
+                    <span className="card-type-badge event">사건</span>
+                    <span className="card-year">{event?.year || ''}</span>
                   </div>
-                )}
-              </div>
-            ))}
+                  <h4 className="card-title">{event?.title || '제목 없음'}</h4>
+                  <p className="card-preview">{event?.description || ''}</p>
+                  {Array.isArray(event?.tags) && event.tags.length > 0 && (
+                    <div className="card-tags-preview">
+                      {event.tags.slice(0, 3).map((tag, idx) => (
+                        <span key={idx} className="tag-mini">#{tag || ''}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
