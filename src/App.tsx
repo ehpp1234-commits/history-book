@@ -4,6 +4,7 @@ import { Header } from './components/Header/Header';
 import { Timeline } from './components/Timeline/Timeline';
 import { KingsTimeline } from './components/KingsTimeline/KingsTimeline';
 import { RiseAndFallChart } from './components/RiseAndFallChart/RiseAndFallChart';
+import { Quiz } from './components/Quiz/Quiz';
 import { SearchResults } from './components/SearchResults/SearchResults';
 import { BottomSheet } from './components/BottomSheet/BottomSheet';
 import { DetailPanel } from './components/DetailPanel/DetailPanel';
@@ -23,7 +24,7 @@ function AppContent() {
   const { isOpen: isBottomSheetOpen, selectedCard: bottomSheetCard, openSheet, closeSheet } = useBottomSheet();
   
   const { studyMode, toggleStudyMode } = useStudyMode();
-  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const { bookmarkedIds, isBookmarked, toggleBookmark } = useBookmarks();
   const [bookmarkOnly, setBookmarkOnly] = useState(false);
 
   const [viewMode, setViewMode] = useState<ViewMode>('events');
@@ -305,6 +306,8 @@ function AppContent() {
             onKingClick={handleKingClick}
             isDarkMode={isDarkMode}
           />
+        ) : viewMode === 'quiz' ? (
+          <Quiz eras={historyData.eras} bookmarkedIds={bookmarkedIds} />
         ) : (
           <RiseAndFallChart />
         )}

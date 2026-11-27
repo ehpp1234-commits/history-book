@@ -138,6 +138,37 @@
   transition: all 0.2s ease;
 }
 
+.tab-button {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.tab-short {
+  display: none;
+}
+
+/* 탭 4개가 한 줄에 들어가도록 모바일/태블릿에서는 짧은 라벨 사용 */
+@media (max-width: 768px) {
+  .tab-full {
+    display: none;
+  }
+
+  .tab-short {
+    display: inline;
+  }
+
+  .tab-button {
+    padding: 0.65rem 0.25rem;
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .tab-button {
+    font-size: 0.78rem;
+  }
+}
+
 .tab-button:hover {
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -307,12 +338,12 @@
 
   .view-mode-tabs {
     padding: 0.4rem;
-    gap: 0.4rem;
+    gap: 0.3rem;
   }
 
   .tab-button {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.9rem;
+    padding: 0.6rem 0.15rem;
+    font-size: 0.85rem;
   }
 
   .era-nav {

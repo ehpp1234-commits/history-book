@@ -93,5 +93,5 @@ export type Theme = 'dark' | 'light';
 
 export type BottomSheetState = 'closed' | 'preview' | 'open';
 
-export type ViewMode = 'events' | 'kings' | 'chart'; // Add view mode type
+export type ViewMode = 'events' | 'kings' | 'chart' | 'quiz'; // Add view mode type
 

@@ -2,6 +2,7 @@
 import type { Era, CardData } from '../../data/types';
 import { Concealed } from '../Concealed/Concealed';
 import { BookmarkButton } from '../BookmarkButton/BookmarkButton';
+import { WeightBar } from '../WeightBar/WeightBar';
 import './Timeline.css';
 
 interface TimelineProps {
@@ -228,7 +229,7 @@ export function Timeline({
                                   {card.year || ''}
                                 </Concealed>
                                 <div className="card-header-right">
-                                  <span className="card-weight">중요도 {card.weight || 0}/5</span>
+                                  <WeightBar weight={card.weight || 0} />
                                   <BookmarkButton
                                     active={isBookmarked(card.id)}
                                     onToggle={() => onToggleBookmark(card.id)}
@@ -236,7 +237,19 @@ export function Timeline({
                                   />
                                 </div>
                               </div>
-                              <h3 className="card-title">{card.title || '제목 없음'}</h3>
+                              <h3 className="card-title">
+                                {card.title || '제목 없음'}
+                                {card.imageUrl && (
+                                  <span
+                                    className="image-badge"
+                                    role="img"
+                                    aria-label="참고 이미지 있음"
+                                    title="참고 이미지 있음"
+                                  >
+                                    🖼️
+                                  </span>
+                                )}
+                              </h3>
                               {Array.isArray(card.tags) && card.tags.length > 0 && (
                                 <div className="card-tags">
                                   {card.tags.slice(0, 3).map((tag, idx) => (

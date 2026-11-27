@@ -3,6 +3,8 @@ import './DetailPanel.css';
 import type { CardData } from '../../data/types';
 import { Concealed } from '../Concealed/Concealed';
 import { BookmarkButton } from '../BookmarkButton/BookmarkButton';
+import { ReferenceImage } from '../ReferenceImage/ReferenceImage';
+import { WeightBar } from '../WeightBar/WeightBar';
 
 interface DetailPanelProps {
   card: CardData | null;
@@ -30,7 +32,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       <div className="detail-panel-header">
         <div>
           <Concealed active={studyMode} className="card-year">{card.year}</Concealed>
-          {!isKingCard && <span className="card-weight">중요도 {card.weight}/5</span>}
+          {!isKingCard && <WeightBar weight={card.weight} showLabel />}
         </div>
         <div className="panel-actions">
           {!isKingCard && (
@@ -45,6 +47,9 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       </div>
 
       <h2 className="card-title">{card.title}</h2>
+
+      {/* 참고 이미지: 로딩 실패 시 자동으로 숨김 (카드가 바뀌면 Fragment key로 초기화) */}
+      <ReferenceImage src={card.imageUrl} caption={card.imageCaption} title={card.title} />
       
       <Concealed active={studyMode} display="block" className="card-description">
         {card.description}

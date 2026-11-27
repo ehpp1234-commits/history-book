@@ -1,8 +1,10 @@
-﻿import React, { useState } from 'react';
+﻿import React from 'react';
 import './BottomSheet.css';
 import type { CardData } from '../../data/types';
 import { Concealed } from '../Concealed/Concealed';
 import { BookmarkButton } from '../BookmarkButton/BookmarkButton';
+import { ReferenceImage } from '../ReferenceImage/ReferenceImage';
+import { WeightBar } from '../WeightBar/WeightBar';
 
 interface BottomSheetProps {
   card: CardData | null;
@@ -21,12 +23,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   isBookmarked,
   onToggleBookmark,
 }) => {
-  const [imageError, setImageError] = useState(false);
-
   if (!card) return null;
 
   const isKingCard = card.type === 'king' && card.kingData;
-  const hasImage = card.imageUrl && !imageError;
 
   return (
     <>
@@ -48,7 +47,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
           <div className="bottom-sheet-header">
             <div>
               <Concealed active={studyMode} className="card-year">{card.year}</Concealed>
-              {!isKingCard && <span className="card-weight">중요도 {card.weight}/5</span>}
+              {!isKingCard && <WeightBar weight={card.weight} showLabel />}
             </div>
             <div className="sheet-actions">
               {!isKingCard && (
@@ -64,21 +63,8 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
 
           <h2 className="card-title">{card.title}</h2>
 
-          {/* Reference Image Card */}
-          {hasImage && (
-            <div className="reference-image-card">
-              <img
-                src={card.imageUrl}
-                alt={card.imageCaption || card.title}
-                className="reference-image"
-                onError={() => setImageError(true)}
-                loading="lazy"
-              />
-              {card.imageCaption && (
-                <p className="image-caption">{card.imageCaption}</p>
-              )}
-            </div>
-          )}
+          {/* 참고 이미지: 로딩 실패 시 자동으로 숨김 (카드가 바뀌면 key로 초기화) */}
+          <ReferenceImage src={card.imageUrl} caption={card.imageCaption} title={card.title} />
           
           <Concealed active={studyMode} display="block" className="card-description">
             {card.description}

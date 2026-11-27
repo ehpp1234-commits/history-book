@@ -194,6 +194,16 @@
   line-height: 1.4;
 }
 
+/* 참고 이미지가 있는 카드 배지 */
+.image-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.85em;
+  line-height: 1;
+  vertical-align: middle;
+  cursor: help;
+}
+
 /* Card Tags */
 .card-tags {
   display: flex;

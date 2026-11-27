@@ -103,20 +103,34 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               className={`tab-button ${viewMode === 'events' ? 'active' : ''}`}
               onClick={() => onViewModeChange('events')}
+              aria-label="사건 연표"
             >
-              📅 사건 연표
+              <span className="tab-full">📅 사건 연표</span>
+              <span className="tab-short" aria-hidden="true">📅 사건</span>
             </button>
             <button
               className={`tab-button ${viewMode === 'kings' ? 'active' : ''}`}
               onClick={() => onViewModeChange('kings')}
+              aria-label="역대 왕 정리"
             >
-              🤴 역대 왕 정리
+              <span className="tab-full">🤴 역대 왕 정리</span>
+              <span className="tab-short" aria-hidden="true">🤴 왕</span>
             </button>
             <button
               className={`tab-button ${viewMode === 'chart' ? 'active' : ''}`}
               onClick={() => onViewModeChange('chart')}
+              aria-label="흥망성쇠 그래프"
             >
-              📈 흥망성쇠 그래프
+              <span className="tab-full">📈 흥망성쇠 그래프</span>
+              <span className="tab-short" aria-hidden="true">📈 그래프</span>
+            </button>
+            <button
+              className={`tab-button ${viewMode === 'quiz' ? 'active' : ''}`}
+              onClick={() => onViewModeChange('quiz')}
+              aria-label="연표 퀴즈"
+            >
+              <span className="tab-full">🧩 연표 퀴즈</span>
+              <span className="tab-short" aria-hidden="true">🧩 퀴즈</span>
             </button>
           </div>
 
