@@ -3,6 +3,7 @@ import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { Header } from './components/Header/Header';
 import { Timeline } from './components/Timeline/Timeline';
 import { KingsTimeline } from './components/KingsTimeline/KingsTimeline';
+import { RiseAndFallChart } from './components/RiseAndFallChart/RiseAndFallChart';
 import { SearchResults } from './components/SearchResults/SearchResults';
 import { BottomSheet } from './components/BottomSheet/BottomSheet';
 import { DetailPanel } from './components/DetailPanel/DetailPanel';
@@ -261,12 +262,14 @@ function AppContent() {
             onCardClick={handleCardClick}
             isDarkMode={isDarkMode}
           />
-        ) : (
+        ) : viewMode === 'kings' ? (
           <KingsTimeline
             kings={allKings || []}
             onKingClick={handleKingClick}
             isDarkMode={isDarkMode}
           />
+        ) : (
+          <RiseAndFallChart />
         )}
       </main>
 
