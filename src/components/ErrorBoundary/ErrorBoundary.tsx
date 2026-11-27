@@ -64,7 +64,7 @@ export class ErrorBoundary extends Component<Props, State> {
               🔄 페이지 새로고침
             </button>
             
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="error-details">
                 <summary>개발자 정보 (상세 에러)</summary>
                 <pre className="error-stack">
