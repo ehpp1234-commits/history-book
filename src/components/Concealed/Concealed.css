@@ -1,0 +1,32 @@
+.concealed {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.concealed:focus-visible {
+  outline: 2px solid var(--accent-color, #0066cc);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.concealed-content {
+  display: inline-block;
+  filter: blur(6px);
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+  transition: filter 0.2s ease;
+}
+
+.concealed-block {
+  display: block;
+  overflow: hidden;
+}
+
+.concealed-block .concealed-content {
+  display: block;
+}
+
+.concealed:hover .concealed-content {
+  filter: blur(4px);
+}

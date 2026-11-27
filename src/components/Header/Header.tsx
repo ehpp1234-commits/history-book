@@ -16,6 +16,11 @@ interface HeaderProps {
   isSearchActive: boolean;
   selectedEraFilter: string | null;
   onShowAllEras: () => void;
+  studyMode: boolean;
+  onStudyModeToggle: () => void;
+  bookmarkOnly: boolean;
+  onBookmarkOnlyToggle: () => void;
+  bookmarkCount: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -31,6 +36,11 @@ export const Header: React.FC<HeaderProps> = ({
   isSearchActive,
   selectedEraFilter,
   onShowAllEras,
+  studyMode,
+  onStudyModeToggle,
+  bookmarkOnly,
+  onBookmarkOnlyToggle,
+  bookmarkCount,
 }) => {
   const isDarkEraButton = (bgColor: string) => {
     return bgColor.toLowerCase().startsWith('#2') || 
@@ -64,6 +74,17 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
           
+          <button
+            type="button"
+            className={`study-toggle ${studyMode ? 'active' : ''}`}
+            onClick={onStudyModeToggle}
+            aria-pressed={studyMode}
+            title="연도와 키워드를 가리고, 눌러서 정답을 확인하며 암기합니다"
+          >
+            <span className="study-toggle-icon" aria-hidden="true">📝</span>
+            암기 모드
+          </button>
+
           <button
             className="theme-toggle"
             onClick={onThemeToggle}
@@ -133,15 +154,26 @@ export const Header: React.FC<HeaderProps> = ({
                 })}
               </nav>
 
-              {selectedEraFilter ? (
-                <div className="current-era-badge">
-                  선택한 시대: <strong>{eras.find(e => e.id === selectedEraFilter)?.name}</strong>
-                </div>
-              ) : (
-                <div className="current-era-badge">
-                  <strong>전체 시대</strong> 보기
-                </div>
-              )}
+              <div className="filter-row">
+                {selectedEraFilter ? (
+                  <div className="current-era-badge">
+                    선택한 시대: <strong>{eras.find(e => e.id === selectedEraFilter)?.name}</strong>
+                  </div>
+                ) : (
+                  <div className="current-era-badge">
+                    <strong>전체 시대</strong> 보기
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className={`bookmark-filter-btn ${bookmarkOnly ? 'active' : ''}`}
+                  onClick={onBookmarkOnlyToggle}
+                  aria-pressed={bookmarkOnly}
+                >
+                  <span aria-hidden="true">{bookmarkOnly ? '★' : '☆'}</span> 북마크만 보기 ({bookmarkCount})
+                </button>
+              </div>
             </>
           )}
         </>

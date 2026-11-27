@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { Header } from './components/Header/Header';
 import { Timeline } from './components/Timeline/Timeline';
@@ -12,6 +12,8 @@ import { allKings } from './data/kingsData';
 import { useTheme } from './hooks/useTheme';
 import { useSearch } from './hooks/useSearch';
 import { useBottomSheet } from './hooks/useBottomSheet';
+import { useBookmarks } from './hooks/useBookmarks';
+import { useStudyMode } from './hooks/useStudyMode';
 import type { CardData, KingData, ViewMode } from './data/types';
 import './App.css';
 
@@ -20,11 +22,45 @@ function AppContent() {
   const { searchQuery, setSearchQuery, filteredCards } = useSearch(historyData.eras);
   const { isOpen: isBottomSheetOpen, selectedCard: bottomSheetCard, openSheet, closeSheet } = useBottomSheet();
   
+  const { studyMode, toggleStudyMode } = useStudyMode();
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const [bookmarkOnly, setBookmarkOnly] = useState(false);
+
   const [viewMode, setViewMode] = useState<ViewMode>('events');
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [currentEraId, setCurrentEraId] = useState<string | null>(null);
   const [selectedEraFilter, setSelectedEraFilter] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+
+  const convertKingToCard = (king: KingData): CardData => {
+    try {
+      return {
+        id: king?.id || '',
+        eraId: king?.eraId || '',
+        year: `${king?.reignStart || ''} ~ ${king?.reignEnd || ''}`,
+        weight: 5,
+        title: king?.name || '알 수 없음',
+        description: king?.description || '',
+        tags: Array.isArray(king?.examKeywords) ? king.examKeywords : [],
+        relatedEvents: Array.isArray(king?.majorEvents) ? king.majorEvents : [],
+        type: 'king',
+        kingData: king
+      };
+    } catch (error) {
+      console.error('Error converting king to card:', error, king);
+      return {
+        id: 'error',
+        eraId: '',
+        year: '',
+        weight: 1,
+        title: '오류',
+        description: '카드 변환 중 오류가 발생했습니다',
+        tags: [],
+        relatedEvents: [],
+        type: 'event'
+      };
+    }
+  };
 
   // Unified search results
   const searchActive = (searchQuery || '').trim().length > 0;
@@ -106,36 +142,6 @@ function AppContent() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const convertKingToCard = (king: KingData): CardData => {
-    try {
-      return {
-        id: king?.id || '',
-        eraId: king?.eraId || '',
-        year: `${king?.reignStart || ''} ~ ${king?.reignEnd || ''}`,
-        weight: 5,
-        title: king?.name || '알 수 없음',
-        description: king?.description || '',
-        tags: Array.isArray(king?.examKeywords) ? king.examKeywords : [],
-        relatedEvents: Array.isArray(king?.majorEvents) ? king.majorEvents : [],
-        type: 'king',
-        kingData: king
-      };
-    } catch (error) {
-      console.error('Error converting king to card:', error, king);
-      return {
-        id: 'error',
-        eraId: '',
-        year: '',
-        weight: 1,
-        title: '오류',
-        description: '카드 변환 중 오류가 발생했습니다',
-        tags: [],
-        relatedEvents: [],
-        type: 'event'
-      };
-    }
-  };
-
   const handleCardClick = (card: CardData) => {
     try {
       if (!card) return;
@@ -212,6 +218,17 @@ function AppContent() {
     }
   }, [currentEraId]);
 
+  // 북마크한 사건 수 (실제 존재하는 카드 기준)
+  const bookmarkCount = historyData.eras.reduce(
+    (sum, era) => sum + (era.cards || []).filter(card => isBookmarked(card.id)).length,
+    0
+  );
+
+  // '북마크만 보기'가 켜져 있으면 북마크한 카드만 타임라인에 전달
+  const timelineCards = bookmarkOnly
+    ? filteredCards.filter(card => isBookmarked(card.id))
+    : filteredCards;
+
   // Filter eras based on selection with safe access
   const displayedEras = (() => {
     try {
@@ -219,9 +236,14 @@ function AppContent() {
         return [];
       }
       
-      return selectedEraFilter 
+      const byEra = selectedEraFilter 
         ? historyData.eras.filter(era => era?.id === selectedEraFilter)
         : historyData.eras;
+
+      // 북마크만 볼 때는 북마크가 있는 시대만 표시
+      return bookmarkOnly
+        ? byEra.filter(era => timelineCards.some(card => card.eraId === era.id))
+        : byEra;
     } catch (error) {
       console.error('Error filtering eras:', error);
       return [];
@@ -244,6 +266,11 @@ function AppContent() {
         isSearchActive={searchActive}
         selectedEraFilter={selectedEraFilter}
         onShowAllEras={() => setSelectedEraFilter(null)}
+        studyMode={studyMode}
+        onStudyModeToggle={toggleStudyMode}
+        bookmarkOnly={bookmarkOnly}
+        onBookmarkOnlyToggle={() => setBookmarkOnly(prev => !prev)}
+        bookmarkCount={bookmarkCount}
       />
 
       <main className="app-main">
@@ -256,12 +283,22 @@ function AppContent() {
             onSuggestedSearch={handleSuggestedSearch}
           />
         ) : viewMode === 'events' ? (
-          <Timeline
-            eras={displayedEras}
-            filteredCards={filteredCards}
-            onCardClick={handleCardClick}
-            isDarkMode={isDarkMode}
-          />
+          bookmarkOnly && timelineCards.length === 0 ? (
+            <div className="empty-bookmarks">
+              <p>북마크한 사건이 없습니다.</p>
+              <p>사건 카드의 ☆를 눌러 헷갈리는 사건을 저장해 보세요.</p>
+            </div>
+          ) : (
+            <Timeline
+              eras={displayedEras}
+              filteredCards={timelineCards}
+              onCardClick={handleCardClick}
+              isDarkMode={isDarkMode}
+              studyMode={studyMode}
+              isBookmarked={isBookmarked}
+              onToggleBookmark={toggleBookmark}
+            />
+          )
         ) : viewMode === 'kings' ? (
           <KingsTimeline
             kings={allKings || []}
@@ -278,6 +315,9 @@ function AppContent() {
           card={bottomSheetCard}
           isOpen={isBottomSheetOpen}
           onClose={handleCloseDetail}
+          studyMode={studyMode}
+          isBookmarked={bottomSheetCard ? isBookmarked(bottomSheetCard.id) : false}
+          onToggleBookmark={toggleBookmark}
         />
       )}
 
@@ -285,6 +325,9 @@ function AppContent() {
         <DetailPanel
           card={selectedCard}
           onClose={handleCloseDetail}
+          studyMode={studyMode}
+          isBookmarked={isBookmarked(selectedCard.id)}
+          onToggleBookmark={toggleBookmark}
         />
       )}
     </div>

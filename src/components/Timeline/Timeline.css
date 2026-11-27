@@ -165,6 +165,13 @@
   margin-bottom: 0.5rem;
 }
 
+.card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
 .card-year {
   font-size: 0.85rem;
   font-weight: 600;

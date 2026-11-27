@@ -1,5 +1,7 @@
 ﻿import React from 'react';
 import type { Era, CardData } from '../../data/types';
+import { Concealed } from '../Concealed/Concealed';
+import { BookmarkButton } from '../BookmarkButton/BookmarkButton';
 import './Timeline.css';
 
 interface TimelineProps {
@@ -7,6 +9,9 @@ interface TimelineProps {
   filteredCards: CardData[];
   onCardClick: (card: CardData) => void;
   isDarkMode: boolean;
+  studyMode: boolean;
+  isBookmarked: (id: string) => boolean;
+  onToggleBookmark: (id: string) => void;
 }
 
 // Helper function to extract numeric year from year string with safe access
@@ -116,7 +121,15 @@ const groupCardsByCentury = (cards: CardData[], eraId: string): Map<string, Card
   return groups;
 };
 
-export function Timeline({ eras, filteredCards, onCardClick, isDarkMode }: TimelineProps) {
+export function Timeline({
+  eras,
+  filteredCards,
+  onCardClick,
+  isDarkMode,
+  studyMode,
+  isBookmarked,
+  onToggleBookmark,
+}: TimelineProps) {
   // Safe array checks
   const safeEras = Array.isArray(eras) ? eras.filter(era => era != null) : [];
   const safeFilteredCards = Array.isArray(filteredCards) ? filteredCards.filter(card => card != null) : [];
@@ -211,14 +224,25 @@ export function Timeline({ eras, filteredCards, onCardClick, isDarkMode }: Timel
                               }}
                             >
                               <div className="card-header">
-                                <span className="card-year">{card.year || ''}</span>
-                                <span className="card-weight">★ {card.weight || 0}/5</span>
+                                <Concealed active={studyMode} className="card-year">
+                                  {card.year || ''}
+                                </Concealed>
+                                <div className="card-header-right">
+                                  <span className="card-weight">중요도 {card.weight || 0}/5</span>
+                                  <BookmarkButton
+                                    active={isBookmarked(card.id)}
+                                    onToggle={() => onToggleBookmark(card.id)}
+                                    label={card.title || '사건'}
+                                  />
+                                </div>
                               </div>
                               <h3 className="card-title">{card.title || '제목 없음'}</h3>
                               {Array.isArray(card.tags) && card.tags.length > 0 && (
                                 <div className="card-tags">
                                   {card.tags.slice(0, 3).map((tag, idx) => (
-                                    <span key={idx} className="tag">#{tag || ''}</span>
+                                    <Concealed key={idx} active={studyMode} className="tag">
+                                      #{tag || ''}
+                                    </Concealed>
                                   ))}
                                 </div>
                               )}

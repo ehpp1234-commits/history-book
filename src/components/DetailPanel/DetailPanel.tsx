@@ -1,32 +1,54 @@
 ﻿import React from 'react';
 import './DetailPanel.css';
 import type { CardData } from '../../data/types';
+import { Concealed } from '../Concealed/Concealed';
+import { BookmarkButton } from '../BookmarkButton/BookmarkButton';
 
 interface DetailPanelProps {
   card: CardData | null;
   onClose: () => void;
+  studyMode: boolean;
+  isBookmarked: boolean;
+  onToggleBookmark: (id: string) => void;
 }
 
-export const DetailPanel: React.FC<DetailPanelProps> = ({ card, onClose }) => {
+export const DetailPanel: React.FC<DetailPanelProps> = ({
+  card,
+  onClose,
+  studyMode,
+  isBookmarked,
+  onToggleBookmark,
+}) => {
   if (!card) return null;
 
   const isKingCard = card.type === 'king' && card.kingData;
 
   return (
     <aside className="detail-panel" role="complementary" aria-label="상세 정보">
+      {/* key: 카드가 바뀌면 암기 모드 공개 상태를 초기화 */}
+      <React.Fragment key={card.id}>
       <div className="detail-panel-header">
         <div>
-          <span className="card-year">{card.year}</span>
+          <Concealed active={studyMode} className="card-year">{card.year}</Concealed>
           {!isKingCard && <span className="card-weight">중요도 {card.weight}/5</span>}
         </div>
-        <button className="close-btn" onClick={onClose} aria-label="닫기">✕</button>
+        <div className="panel-actions">
+          {!isKingCard && (
+            <BookmarkButton
+              active={isBookmarked}
+              onToggle={() => onToggleBookmark(card.id)}
+              label={card.title}
+            />
+          )}
+          <button className="close-btn" onClick={onClose} aria-label="닫기">✕</button>
+        </div>
       </div>
 
       <h2 className="card-title">{card.title}</h2>
       
-      <div className="card-description">
+      <Concealed active={studyMode} display="block" className="card-description">
         {card.description}
-      </div>
+      </Concealed>
 
       {/* King-specific details */}
       {isKingCard && card.kingData && (
@@ -35,7 +57,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ card, onClose }) => {
             <h3>🏆 주요 업적</h3>
             <ul className="king-achievements-list">
               {card.kingData.keyAchievements.map((achievement, idx) => (
-                <li key={idx}>{achievement}</li>
+                <li key={idx}><Concealed active={studyMode}>{achievement}</Concealed></li>
               ))}
             </ul>
           </div>
@@ -45,7 +67,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ card, onClose }) => {
               <h3>📜 주요 제도</h3>
               <ul className="king-items-list">
                 {card.kingData.institutions.map((inst, idx) => (
-                  <li key={idx}>{inst}</li>
+                  <li key={idx}><Concealed active={studyMode}>{inst}</Concealed></li>
                 ))}
               </ul>
             </div>
@@ -56,7 +78,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ card, onClose }) => {
               <h3>📚 편찬 서적</h3>
               <ul className="king-items-list">
                 {card.kingData.books.map((book, idx) => (
-                  <li key={idx}>{book}</li>
+                  <li key={idx}><Concealed active={studyMode}>{book}</Concealed></li>
                 ))}
               </ul>
             </div>
@@ -67,7 +89,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ card, onClose }) => {
               <h3>🔍 주요 사건</h3>
               <ul className="king-events-list">
                 {card.kingData.majorEvents.map((event, idx) => (
-                  <li key={idx}>{event}</li>
+                  <li key={idx}><Concealed active={studyMode}>{event}</Concealed></li>
                 ))}
               </ul>
             </div>
@@ -79,7 +101,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ card, onClose }) => {
       {!isKingCard && card.tags && card.tags.length > 0 && (
         <div className="card-tags">
           {card.tags.map((tag, idx) => (
-            <span key={idx} className="tag">#{tag}</span>
+            <Concealed key={idx} active={studyMode} className="tag">#{tag}</Concealed>
           ))}
         </div>
       )}
@@ -90,7 +112,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ card, onClose }) => {
           <h3>✏️ 한능검 출제 키워드</h3>
           <div className="card-tags">
             {card.tags.map((keyword, idx) => (
-              <span key={idx} className="tag exam-keyword">{keyword}</span>
+              <Concealed key={idx} active={studyMode} className="tag exam-keyword">{keyword}</Concealed>
             ))}
           </div>
         </div>
@@ -101,11 +123,12 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ card, onClose }) => {
           <h3>연관 사건</h3>
           <ul>
             {card.relatedEvents.map((event, idx) => (
-              <li key={idx}>{event}</li>
+              <li key={idx}><Concealed active={studyMode}>{event}</Concealed></li>
             ))}
           </ul>
         </div>
       )}
+      </React.Fragment>
     </aside>
   );
 };
