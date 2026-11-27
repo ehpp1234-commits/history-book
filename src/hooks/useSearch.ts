@@ -1,37 +1,38 @@
-import { useState, useMemo } from 'react';
-import type { SummaryCard } from '../data/types';
+﻿import { useState, useMemo } from 'react';
+import type { Era } from '../data/types';
 
-export function useSearch(cards: SummaryCard[]) {
+export function useSearch(eras: Era[]) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const matchedCards = useMemo(() => {
+  const filteredCards = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return new Set<string>();
+    if (!query) {
+      // No search query, return all cards from all eras
+      return eras.flatMap(era => 
+        era.cards?.map(card => ({ ...card, eraId: era.id })) || []
+      );
+    }
 
-    return new Set(
-      cards
+    // Filter cards based on search query
+    return eras.flatMap(era => 
+      (era.cards || [])
         .filter(card => {
-          const searchText = [
+          const searchableText = [
             card.title,
-            card.yearLabel,
-            ...card.keywords,
-            card.detail.background,
-            card.detail.development,
-            card.detail.result,
-            card.detail.examPoints
+            card.year?.toString(),
+            ...(card.tags || []),
+            card.description
           ].join(' ').toLowerCase();
-
-          return searchText.includes(query);
+          
+          return searchableText.includes(query);
         })
-        .map(card => card.id)
+        .map(card => ({ ...card, eraId: era.id }))
     );
-  }, [cards, searchQuery]);
+  }, [eras, searchQuery]);
 
   return {
     searchQuery,
     setSearchQuery,
-    matchedCards,
-    hasMatches: matchedCards.size > 0,
-    matchCount: matchedCards.size
+    filteredCards
   };
 }

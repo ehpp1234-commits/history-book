@@ -16,6 +16,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ card, isOpen, onClose 
       <div
         className={`bottom-sheet-overlay ${isOpen ? 'active' : ''}`}
         onClick={onClose}
+        role="button"
+        tabIndex={-1}
+        aria-label="닫기"
       />
       <div className={`bottom-sheet ${isOpen ? 'open' : ''}`}>
         <div className="bottom-sheet-handle" />
@@ -26,7 +29,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ card, isOpen, onClose 
               <span className="card-year">{card.year}</span>
               <span className="card-weight">중요도 {card.weight}/5</span>
             </div>
-            <button className="close-btn" onClick={onClose}>✕</button>
+            <button className="close-btn" onClick={onClose} aria-label="닫기">✕</button>
           </div>
 
           <h2 className="card-title">{card.title}</h2>
