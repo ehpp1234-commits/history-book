@@ -15,6 +15,7 @@ import { useSearch } from './hooks/useSearch';
 import { useBottomSheet } from './hooks/useBottomSheet';
 import { useBookmarks } from './hooks/useBookmarks';
 import { useStudyMode } from './hooks/useStudyMode';
+import { buildKingSearchText, matchesTokens, tokenizeQuery } from './data/searchUtils';
 import type { CardData, KingData, ViewMode } from './data/types';
 import './App.css';
 
@@ -73,43 +74,13 @@ function AppContent() {
         return [];
       }
 
+      const tokens = tokenizeQuery(searchQuery);
+      if (tokens.length === 0) return [];
+
+      // 이름·왕조·업적·제도·서적·사건·키워드를 대소문자/공백/구두점 무시하고 검색
       return allKings.filter(king => {
         try {
-          if (!searchQuery?.trim()) return false;
-          
-          const query = searchQuery.toLowerCase();
-          
-          // 모든 속성을 안전하게 처리
-          const name = (king?.name || '').toLowerCase();
-          const dynasty = (king?.dynasty || '').toLowerCase();
-          
-          // 배열 속성 안전 처리
-          const achievements = Array.isArray(king?.keyAchievements)
-            ? king.keyAchievements.filter(item => item != null).join(' ').toLowerCase()
-            : '';
-          
-          const institutions = Array.isArray(king?.institutions)
-            ? king.institutions.filter(item => item != null).join(' ').toLowerCase()
-            : '';
-          
-          const books = Array.isArray(king?.books)
-            ? king.books.filter(item => item != null).join(' ').toLowerCase()
-            : '';
-          
-          const keywords = Array.isArray(king?.examKeywords)
-            ? king.examKeywords.filter(item => item != null).join(' ').toLowerCase()
-            : '';
-          
-          const searchText = [
-            name,
-            dynasty,
-            achievements,
-            institutions,
-            books,
-            keywords
-          ].join(' ');
-          
-          return searchText.includes(query);
+          return matchesTokens(buildKingSearchText(king), tokens);
         } catch (error) {
           console.error('Error filtering king:', error, king);
           return false;
