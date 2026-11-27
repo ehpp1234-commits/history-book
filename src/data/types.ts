@@ -14,6 +14,8 @@ export interface KingData {
   majorEvents: string[]; // 주요 사건
   description: string; // 전체 설명
   examKeywords: string[]; // 한능검 출제 키워드
+  imageUrl?: string; // 참고 이미지 URL
+  imageCaption?: string; // 이미지 설명
 }
 
 // Update CardData to support both event cards and king cards
@@ -28,6 +30,8 @@ export interface CardData {
   relatedEvents?: string[];
   type?: 'event' | 'king'; // Add type to distinguish
   kingData?: KingData; // Additional king data
+  imageUrl?: string; // 참고 이미지 URL (BottomSheet용)
+  imageCaption?: string; // 이미지 설명
 }
 
 export interface EraWatermarkLabel {

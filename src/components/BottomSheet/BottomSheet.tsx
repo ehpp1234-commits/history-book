@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
 import './BottomSheet.css';
 import type { CardData } from '../../data/types';
 
@@ -9,9 +9,12 @@ interface BottomSheetProps {
 }
 
 export const BottomSheet: React.FC<BottomSheetProps> = ({ card, isOpen, onClose }) => {
+  const [imageError, setImageError] = useState(false);
+
   if (!card) return null;
 
   const isKingCard = card.type === 'king' && card.kingData;
+  const hasImage = card.imageUrl && !imageError;
 
   return (
     <>
@@ -38,6 +41,22 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ card, isOpen, onClose 
           </div>
 
           <h2 className="card-title">{card.title}</h2>
+
+          {/* Reference Image Card */}
+          {hasImage && (
+            <div className="reference-image-card">
+              <img
+                src={card.imageUrl}
+                alt={card.imageCaption || card.title}
+                className="reference-image"
+                onError={() => setImageError(true)}
+                loading="lazy"
+              />
+              {card.imageCaption && (
+                <p className="image-caption">{card.imageCaption}</p>
+              )}
+            </div>
+          )}
           
           <div className="card-description">
             {card.description}
