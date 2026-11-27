@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header/Header';
 import { Timeline } from './components/Timeline/Timeline';
 import { BottomSheet } from './components/BottomSheet/BottomSheet';
@@ -7,7 +7,7 @@ import { historyData } from './data/historyData';
 import { useTheme } from './hooks/useTheme';
 import { useSearch } from './hooks/useSearch';
 import { useBottomSheet } from './hooks/useBottomSheet';
-import { SummaryCard } from './data/types';
+import type { CardData } from './data/types';
 import './App.css';
 
 function App() {
@@ -15,11 +15,10 @@ function App() {
   const { searchQuery, setSearchQuery, filteredCards } = useSearch(historyData.eras);
   const { isOpen: isBottomSheetOpen, selectedCard: bottomSheetCard, openSheet, closeSheet } = useBottomSheet();
   
-  const [selectedCard, setSelectedCard] = useState<SummaryCard | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [currentEraId, setCurrentEraId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile screen size
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -30,7 +29,7 @@ function App() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleCardClick = (card: SummaryCard) => {
+  const handleCardClick = (card: CardData) => {
     if (isMobile) {
       openSheet(card);
     } else {
@@ -50,17 +49,10 @@ function App() {
     }
   };
 
-  // Update current era based on scroll position (simplified for MVP)
   useEffect(() => {
-    const handleScroll = () => {
-      // This would be implemented with Intersection Observer in production
-      // For MVP, just set to first era
-      if (!currentEraId && historyData.eras.length > 0) {
-        setCurrentEraId(historyData.eras[0].id);
-      }
-    };
-
-    handleScroll();
+    if (!currentEraId && historyData.eras.length > 0) {
+      setCurrentEraId(historyData.eras[0].id);
+    }
   }, [currentEraId]);
 
   return (
@@ -84,7 +76,6 @@ function App() {
         />
       </main>
 
-      {/* Mobile: BottomSheet */}
       {isMobile && (
         <BottomSheet
           card={bottomSheetCard}
@@ -93,7 +84,6 @@ function App() {
         />
       )}
 
-      {/* Desktop: DetailPanel */}
       {!isMobile && selectedCard && (
         <DetailPanel
           card={selectedCard}

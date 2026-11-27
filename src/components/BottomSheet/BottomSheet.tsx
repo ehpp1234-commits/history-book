@@ -1,9 +1,9 @@
 ﻿import React from 'react';
 import './BottomSheet.css';
-import { SummaryCard } from '../../data/types';
+import type { CardData } from '../../data/types';
 
 interface BottomSheetProps {
-  card: SummaryCard | null;
+  card: CardData | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -19,6 +19,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ card, isOpen, onClose 
         role="button"
         tabIndex={-1}
         aria-label="닫기"
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') onClose();
+        }}
       />
       <div className={`bottom-sheet ${isOpen ? 'open' : ''}`}>
         <div className="bottom-sheet-handle" />

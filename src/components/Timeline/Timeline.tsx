@@ -1,22 +1,19 @@
 ﻿import React from 'react';
-import type { Era, SummaryCard } from '../../data/types';
+import type { Era, CardData } from '../../data/types';
 import './Timeline.css';
 
 interface TimelineProps {
   eras: Era[];
-  filteredCards: SummaryCard[];
-  onCardClick: (card: SummaryCard) => void;
+  filteredCards: CardData[];
+  onCardClick: (card: CardData) => void;
   isDarkMode: boolean;
 }
 
 export function Timeline({ eras, filteredCards, onCardClick, isDarkMode }: TimelineProps) {
   return (
     <div className="timeline-container">
-      {/* Era sections */}
       {eras.map((era) => {
         const bgColor = isDarkMode ? era.bgColorDark : era.bgColor;
-        
-        // Get cards for this era from filteredCards
         const eraCards = filteredCards.filter(card => card.eraId === era.id);
         
         return (
@@ -29,13 +26,11 @@ export function Timeline({ eras, filteredCards, onCardClick, isDarkMode }: Timel
               minWidth: '800px'
             }}
           >
-            {/* Era header */}
             <div className="era-header">
               <h2 className="era-name">{era.name}</h2>
               <p className="era-period">{era.periodLabel}</p>
             </div>
 
-            {/* Era watermark */}
             <div
               className="era-watermark"
               style={{
@@ -45,7 +40,6 @@ export function Timeline({ eras, filteredCards, onCardClick, isDarkMode }: Timel
               {era.watermarkLabel.ko}
             </div>
 
-            {/* Cards for this era */}
             <div className="era-cards">
               {eraCards.length > 0 ? (
                 eraCards.map((card) => (

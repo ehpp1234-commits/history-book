@@ -8,6 +8,18 @@ export interface EraWatermarkLabel {
   period: string;
 }
 
+// Simplified card structure for display
+export interface CardData {
+  id: string;
+  eraId?: string; // Optional for compatibility
+  year: string;
+  weight: number;
+  title: string;
+  description: string;
+  tags?: string[];
+  relatedEvents?: string[];
+}
+
 export interface Era {
   id: string;
   name: string;
@@ -20,7 +32,7 @@ export interface Era {
   bgColorDark: string;
   pattern: string;
   watermarkLabel: EraWatermarkLabel;
-  cards?: CardData[]; // Optional cards array for each era
+  cards?: CardData[];
 }
 
 export type CardPosition = 'upper' | 'lower';
@@ -32,17 +44,7 @@ export interface Detail {
   examPoints: string;
 }
 
-// Simplified card structure that matches historyData
-export interface CardData {
-  id: string;
-  year: string;
-  weight: number;
-  title: string;
-  description: string;
-  tags?: string[];
-  relatedEvents?: string[];
-}
-
+// Legacy SummaryCard - kept for backward compatibility
 export interface SummaryCard {
   id: string;
   eraId: string;

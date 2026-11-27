@@ -1,9 +1,9 @@
 ﻿import React from 'react';
 import './DetailPanel.css';
-import { SummaryCard } from '../../data/types';
+import type { CardData } from '../../data/types';
 
 interface DetailPanelProps {
-  card: SummaryCard | null;
+  card: CardData | null;
   onClose: () => void;
 }
 

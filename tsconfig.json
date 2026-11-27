@@ -14,18 +14,26 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Strict type checking */
+    /* Linting */
     "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true,
-
-    /* Additional checks */
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.example.ts", "src/**/*.example.tsx", "src/test/**/*", "node_modules"]
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.example.ts",
+    "**/*.example.tsx",
+    "**/test/**",
+    "**/tests/**",
+    "**/__tests__/**"
+  ]
 }

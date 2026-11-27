@@ -1,18 +1,17 @@
 ﻿import { useState, useCallback } from 'react';
-import type { SummaryCard } from '../data/types';
+import type { CardData } from '../data/types';
 
 export function useBottomSheet() {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<SummaryCard | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
 
-  const openSheet = useCallback((card: SummaryCard) => {
+  const openSheet = useCallback((card: CardData) => {
     setSelectedCard(card);
     setIsOpen(true);
   }, []);
 
   const closeSheet = useCallback(() => {
     setIsOpen(false);
-    // Keep card data for exit animation
     setTimeout(() => setSelectedCard(null), 300);
   }, []);
 
