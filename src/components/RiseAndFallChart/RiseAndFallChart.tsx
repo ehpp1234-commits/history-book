@@ -30,42 +30,41 @@ export function RiseAndFallChart() {
     }
   };
 
-  // Y축 위치 계산 (랜덤하게 보이지만 같은 왕조는 비슷한 높이)
-  const getYPosition = (event: HistoricalEvent, index: number): number => {
-    const baseHeight = 50;
-    const variance = 30;
-    
-    // 타입별 기본 높이
-    const typeOffset: Record<string, number> = {
-      'foundation': 70,
-      'peak': 20,
-      'crisis': 50,
-      'fall': 80
-    };
-    
-    return baseHeight + (typeOffset[event.type] || 50) + (Math.sin(index) * variance);
-  };
-
   // SVG 차트 생성
   const chartWidth = Math.max(3000, riseAndFallEvents.length * 150);
   const chartHeight = 300;
   const padding = { top: 40, right: 20, bottom: 60, left: 20 };
+  const plotHeight = chartHeight - padding.top - padding.bottom;
 
   // 좌표 계산
   const xScale = (index: number) => {
     return padding.left + (index * (chartWidth - padding.left - padding.right) / (riseAndFallEvents.length - 1));
   };
 
-  const yScale = (value: number) => {
-    return chartHeight - padding.bottom - value;
+  // score(0~100)를 SVG y좌표로 변환: 100점이 맨 위, 0점이 맨 아래
+  const yScale = (score: number) => {
+    return chartHeight - padding.bottom - (score / 100) * plotHeight;
   };
 
-  // 선 경로 생성
-  const linePath = riseAndFallEvents.map((event, index) => {
-    const x = xScale(index);
-    const y = yScale(getYPosition(event, index));
-    return index === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
-  }).join(' ');
+  // 왕조별 선 경로 생성: 같은 왕조의 사건끼리만 이어 그린다 (dynasty가 없으면 '선사' 그룹)
+  const dynastyPalette = ['#6366F1', '#EC4899', '#14B8A6', '#F97316', '#84CC16', '#06B6D4', '#A855F7', '#EAB308'];
+  const dynastyLines = (() => {
+    const groups = new Map<string, string[]>();
+    riseAndFallEvents.forEach((event, index) => {
+      const key = event.dynasty ?? '선사';
+      const point = `${xScale(index)} ${yScale(event.score)}`;
+      const points = groups.get(key) ?? [];
+      points.push(point);
+      groups.set(key, points);
+    });
+    return Array.from(groups.entries())
+      .filter(([, points]) => points.length > 1)
+      .map(([dynasty, points], i) => ({
+        dynasty,
+        color: dynastyPalette[i % dynastyPalette.length],
+        path: points.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p}`).join(' ')
+      }));
+  })();
 
   // 터치/마우스 드래그 핸들러
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -162,22 +161,26 @@ export function RiseAndFallChart() {
           </defs>
           <rect width={chartWidth} height={chartHeight} fill="url(#grid)" />
 
-          {/* 꺾은선 그래프 */}
-          <path
-            d={linePath}
-            fill="none"
-            stroke="#CBD5E1"
-            strokeWidth="2"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
+          {/* 꺾은선 그래프 (왕조별) */}
+          {dynastyLines.map(line => (
+            <path
+              key={line.dynasty}
+              d={line.path}
+              fill="none"
+              stroke={line.color}
+              strokeOpacity="0.6"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+          ))}
 
           {/* 이벤트 포인트 */}
           {riseAndFallEvents.map((event, index) => {
             const x = xScale(index);
-            const y = yScale(getYPosition(event, index));
+            const y = yScale(event.score);
             const color = getEventColor(event.type);
-            const isSelected = selectedEvent?.year === event.year;
+            const isSelected = selectedEvent === event;
 
             return (
               <g key={index}>
