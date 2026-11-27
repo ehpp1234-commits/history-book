@@ -289,6 +289,7 @@ function AppContent() {
           card={bottomSheetCard}
           isOpen={isBottomSheetOpen}
           onClose={handleCloseDetail}
+          highlightQuery={searchActive ? searchQuery : ''}
           studyMode={studyMode}
           isBookmarked={bottomSheetCard ? isBookmarked(bottomSheetCard.id) : false}
           onToggleBookmark={toggleBookmark}
@@ -299,6 +300,7 @@ function AppContent() {
         <DetailPanel
           card={selectedCard}
           onClose={handleCloseDetail}
+          highlightQuery={searchActive ? searchQuery : ''}
           studyMode={studyMode}
           isBookmarked={isBookmarked(selectedCard.id)}
           onToggleBookmark={toggleBookmark}

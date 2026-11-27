@@ -5,6 +5,7 @@ import { Concealed } from '../Concealed/Concealed';
 import { BookmarkButton } from '../BookmarkButton/BookmarkButton';
 import { ReferenceImage } from '../ReferenceImage/ReferenceImage';
 import { WeightBar } from '../WeightBar/WeightBar';
+import { HighlightText, highlightWhenRevealed } from '../HighlightText/HighlightText';
 
 interface DetailPanelProps {
   card: CardData | null;
@@ -12,6 +13,8 @@ interface DetailPanelProps {
   studyMode: boolean;
   isBookmarked: boolean;
   onToggleBookmark: (id: string) => void;
+  /** 검색 중이면 현재 검색어. 제목·설명·키워드에 형광펜을 칠한다 */
+  highlightQuery?: string;
 }
 
 export const DetailPanel: React.FC<DetailPanelProps> = ({
@@ -20,10 +23,12 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   studyMode,
   isBookmarked,
   onToggleBookmark,
+  highlightQuery = '',
 }) => {
   if (!card) return null;
 
   const isKingCard = card.type === 'king' && card.kingData;
+  const hl = (text: string) => highlightWhenRevealed(text, highlightQuery);
 
   return (
     <aside className="detail-panel" role="complementary" aria-label="상세 정보">
@@ -46,13 +51,13 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
         </div>
       </div>
 
-      <h2 className="card-title">{card.title}</h2>
+      <h2 className="card-title"><HighlightText text={card.title} query={highlightQuery} /></h2>
 
       {/* 참고 이미지: 로딩 실패 시 자동으로 숨김 (카드가 바뀌면 Fragment key로 초기화) */}
       <ReferenceImage src={card.imageUrl} caption={card.imageCaption} title={card.title} />
       
       <Concealed active={studyMode} display="block" className="card-description">
-        {card.description}
+        {hl(card.description)}
       </Concealed>
 
       {/* King-specific details */}
@@ -62,7 +67,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
             <h3>🏆 주요 업적</h3>
             <ul className="king-achievements-list">
               {card.kingData.keyAchievements.map((achievement, idx) => (
-                <li key={idx}><Concealed active={studyMode}>{achievement}</Concealed></li>
+                <li key={idx}><Concealed active={studyMode}>{hl(achievement)}</Concealed></li>
               ))}
             </ul>
           </div>
@@ -72,7 +77,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
               <h3>📜 주요 제도</h3>
               <ul className="king-items-list">
                 {card.kingData.institutions.map((inst, idx) => (
-                  <li key={idx}><Concealed active={studyMode}>{inst}</Concealed></li>
+                  <li key={idx}><Concealed active={studyMode}>{hl(inst)}</Concealed></li>
                 ))}
               </ul>
             </div>
@@ -83,7 +88,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
               <h3>📚 편찬 서적</h3>
               <ul className="king-items-list">
                 {card.kingData.books.map((book, idx) => (
-                  <li key={idx}><Concealed active={studyMode}>{book}</Concealed></li>
+                  <li key={idx}><Concealed active={studyMode}>{hl(book)}</Concealed></li>
                 ))}
               </ul>
             </div>
@@ -94,7 +99,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
               <h3>🔍 주요 사건</h3>
               <ul className="king-events-list">
                 {card.kingData.majorEvents.map((event, idx) => (
-                  <li key={idx}><Concealed active={studyMode}>{event}</Concealed></li>
+                  <li key={idx}><Concealed active={studyMode}>{hl(event)}</Concealed></li>
                 ))}
               </ul>
             </div>
@@ -106,7 +111,9 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       {!isKingCard && card.tags && card.tags.length > 0 && (
         <div className="card-tags">
           {card.tags.map((tag, idx) => (
-            <Concealed key={idx} active={studyMode} className="tag">#{tag}</Concealed>
+            <Concealed key={idx} active={studyMode} className="tag">
+              {(revealed) => <>#{hl(tag)(revealed)}</>}
+            </Concealed>
           ))}
         </div>
       )}
@@ -117,7 +124,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
           <h3>✏️ 한능검 출제 키워드</h3>
           <div className="card-tags">
             {card.tags.map((keyword, idx) => (
-              <Concealed key={idx} active={studyMode} className="tag exam-keyword">{keyword}</Concealed>
+              <Concealed key={idx} active={studyMode} className="tag exam-keyword">{hl(keyword)}</Concealed>
             ))}
           </div>
         </div>
@@ -128,7 +135,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
           <h3>연관 사건</h3>
           <ul>
             {card.relatedEvents.map((event, idx) => (
-              <li key={idx}><Concealed active={studyMode}>{event}</Concealed></li>
+              <li key={idx}><Concealed active={studyMode}>{hl(event)}</Concealed></li>
             ))}
           </ul>
         </div>

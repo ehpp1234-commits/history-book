@@ -1,5 +1,7 @@
 ﻿import React from 'react';
 import type { CardData } from '../../data/types';
+import { HighlightText } from '../HighlightText/HighlightText';
+import { pickTagsForQuery, snippetAround } from '../../data/searchUtils';
 import './SearchResults.css';
 
 interface SearchResultsProps {
@@ -115,12 +117,18 @@ export function SearchResults({
                     <span className="card-type-badge">왕</span>
                     <span className="card-year">{king?.year || ''}</span>
                   </div>
-                  <h4 className="card-title">{king?.title || '제목 없음'}</h4>
-                  <p className="card-preview">{king?.description || ''}</p>
+                  <h4 className="card-title">
+                    <HighlightText text={king?.title || '제목 없음'} query={query} />
+                  </h4>
+                  <p className="card-preview">
+                    <HighlightText text={snippetAround(king?.description, query)} query={query} />
+                  </p>
                   {Array.isArray(king?.tags) && king.tags.length > 0 && (
                     <div className="card-tags-preview">
-                      {king.tags.slice(0, 3).map((tag, idx) => (
-                        <span key={idx} className="tag-mini">{tag || ''}</span>
+                      {pickTagsForQuery(king.tags, query).map((tag, idx) => (
+                        <span key={idx} className="tag-mini">
+                          <HighlightText text={tag} query={query} />
+                        </span>
                       ))}
                     </div>
                   )}
@@ -156,12 +164,18 @@ export function SearchResults({
                     <span className="card-type-badge event">사건</span>
                     <span className="card-year">{event?.year || ''}</span>
                   </div>
-                  <h4 className="card-title">{event?.title || '제목 없음'}</h4>
-                  <p className="card-preview">{event?.description || ''}</p>
+                  <h4 className="card-title">
+                    <HighlightText text={event?.title || '제목 없음'} query={query} />
+                  </h4>
+                  <p className="card-preview">
+                    <HighlightText text={snippetAround(event?.description, query)} query={query} />
+                  </p>
                   {Array.isArray(event?.tags) && event.tags.length > 0 && (
                     <div className="card-tags-preview">
-                      {event.tags.slice(0, 3).map((tag, idx) => (
-                        <span key={idx} className="tag-mini">#{tag || ''}</span>
+                      {pickTagsForQuery(event.tags, query).map((tag, idx) => (
+                        <span key={idx} className="tag-mini">
+                          #<HighlightText text={tag} query={query} />
+                        </span>
                       ))}
                     </div>
                   )}

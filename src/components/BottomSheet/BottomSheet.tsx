@@ -5,6 +5,7 @@ import { Concealed } from '../Concealed/Concealed';
 import { BookmarkButton } from '../BookmarkButton/BookmarkButton';
 import { ReferenceImage } from '../ReferenceImage/ReferenceImage';
 import { WeightBar } from '../WeightBar/WeightBar';
+import { HighlightText, highlightWhenRevealed } from '../HighlightText/HighlightText';
 
 interface BottomSheetProps {
   card: CardData | null;
@@ -13,6 +14,8 @@ interface BottomSheetProps {
   studyMode: boolean;
   isBookmarked: boolean;
   onToggleBookmark: (id: string) => void;
+  /** 검색 중이면 현재 검색어. 제목·설명·키워드에 형광펜을 칠한다 */
+  highlightQuery?: string;
 }
 
 export const BottomSheet: React.FC<BottomSheetProps> = ({
@@ -22,10 +25,12 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   studyMode,
   isBookmarked,
   onToggleBookmark,
+  highlightQuery = '',
 }) => {
   if (!card) return null;
 
   const isKingCard = card.type === 'king' && card.kingData;
+  const hl = (text: string) => highlightWhenRevealed(text, highlightQuery);
 
   return (
     <>
@@ -61,13 +66,13 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
             </div>
           </div>
 
-          <h2 className="card-title">{card.title}</h2>
+          <h2 className="card-title"><HighlightText text={card.title} query={highlightQuery} /></h2>
 
           {/* 참고 이미지: 로딩 실패 시 자동으로 숨김 (카드가 바뀌면 key로 초기화) */}
           <ReferenceImage src={card.imageUrl} caption={card.imageCaption} title={card.title} />
           
           <Concealed active={studyMode} display="block" className="card-description">
-            {card.description}
+            {hl(card.description)}
           </Concealed>
 
           {/* King-specific sections */}
@@ -77,7 +82,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
                 <h3>🏆 주요 업적</h3>
                 <ul>
                   {card.kingData.keyAchievements.map((achievement, idx) => (
-                    <li key={idx}><Concealed active={studyMode}>{achievement}</Concealed></li>
+                    <li key={idx}><Concealed active={studyMode}>{hl(achievement)}</Concealed></li>
                   ))}
                 </ul>
               </div>
@@ -87,7 +92,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
                   <h3>📜 주요 제도</h3>
                   <ul>
                     {card.kingData.institutions.map((inst, idx) => (
-                      <li key={idx}><Concealed active={studyMode}>{inst}</Concealed></li>
+                      <li key={idx}><Concealed active={studyMode}>{hl(inst)}</Concealed></li>
                     ))}
                   </ul>
                 </div>
@@ -98,7 +103,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
                   <h3>📚 편찬 서적</h3>
                   <ul>
                     {card.kingData.books.map((book, idx) => (
-                      <li key={idx}><Concealed active={studyMode}>{book}</Concealed></li>
+                      <li key={idx}><Concealed active={studyMode}>{hl(book)}</Concealed></li>
                     ))}
                   </ul>
                 </div>
@@ -109,7 +114,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
           {!isKingCard && card.tags && card.tags.length > 0 && (
             <div className="card-tags">
               {card.tags.map((tag, idx) => (
-                <Concealed key={idx} active={studyMode} className="tag">#{tag}</Concealed>
+                <Concealed key={idx} active={studyMode} className="tag">
+                  {(revealed) => <>#{hl(tag)(revealed)}</>}
+                </Concealed>
               ))}
             </div>
           )}
@@ -119,7 +126,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
               <h3>✏️ 한능검 키워드</h3>
               <div className="card-tags">
                 {card.tags.map((keyword, idx) => (
-                  <Concealed key={idx} active={studyMode} className="tag">{keyword}</Concealed>
+                  <Concealed key={idx} active={studyMode} className="tag">{hl(keyword)}</Concealed>
                 ))}
               </div>
             </div>
@@ -130,7 +137,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
               <h3>연관 사건</h3>
               <ul>
                 {card.relatedEvents.map((event, idx) => (
-                  <li key={idx}><Concealed active={studyMode}>{event}</Concealed></li>
+                  <li key={idx}><Concealed active={studyMode}>{hl(event)}</Concealed></li>
                 ))}
               </ul>
             </div>

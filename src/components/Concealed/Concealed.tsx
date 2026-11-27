@@ -4,7 +4,12 @@ import './Concealed.css';
 interface ConcealedProps {
   /** true이면 내용을 블러 처리한다 (암기 모드) */
   active: boolean;
-  children: React.ReactNode;
+  /**
+   * 함수로 주면 (revealed) => 내용 형태로 호출된다.
+   * 가려진 동안은 revealed=false, 가림막이 없거나 이미 공개됐으면 true.
+   * (예: 검색어 형광펜은 revealed일 때만 칠해 정답이 미리 드러나지 않게 한다)
+   */
+  children: React.ReactNode | ((revealed: boolean) => React.ReactNode);
   className?: string;
   /** 'block'이면 div, 기본값은 span */
   display?: 'inline' | 'block';
@@ -29,8 +34,11 @@ export const Concealed: React.FC<ConcealedProps> = ({
 
   const Tag = display === 'block' ? 'div' : 'span';
 
+  const render = (isRevealed: boolean) =>
+    typeof children === 'function' ? children(isRevealed) : children;
+
   if (!active || revealed) {
-    return <Tag className={className}>{children}</Tag>;
+    return <Tag className={className}>{render(true)}</Tag>;
   }
 
   const reveal = () => setRevealed(true);
@@ -55,7 +63,7 @@ export const Concealed: React.FC<ConcealedProps> = ({
       }}
     >
       <span className="concealed-content" aria-hidden="true">
-        {children}
+        {render(false)}
       </span>
     </Tag>
   );

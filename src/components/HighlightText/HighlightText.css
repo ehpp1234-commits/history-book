@@ -1,0 +1,22 @@
+/* 검색어 형광펜. 배경색과 글자색을 함께 지정해 라이트/다크 어느 쪽에서도 글자가 또렷하게 보인다. */
+.search-highlight {
+  background-color: #fef08a;
+  color: #111827;
+  padding: 0 0.1em;
+  margin: 0 -0.05em;
+  border-radius: 3px;
+  font-style: normal;
+  -webkit-text-fill-color: #111827;
+}
+
+/* 다크 모드: 배경이 어두워도 눈부시지 않게 채도를 약간 낮춘 노랑 + 같은 진한 글자색 */
+[data-theme='dark'] .search-highlight {
+  background-color: #fde047;
+  color: #111827;
+  -webkit-text-fill-color: #111827;
+}
+
+/* 강조 부분은 굵기를 한 단계 올려 더 잘 보이게 */
+.search-highlight {
+  font-weight: 600;
+}
