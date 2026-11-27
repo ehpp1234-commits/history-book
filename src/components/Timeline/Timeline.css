@@ -1,0 +1,146 @@
+.timeline-container {
+  position: relative;
+  width: 500vw; /* 매우 넓은 가로 스크롤 영역 */
+  height: 80vh;
+  min-height: 600px;
+}
+
+.era-background {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: background-color 0.3s ease;
+  opacity: 0.3;
+}
+
+.era-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: 700;
+  opacity: 0.1;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.era-period {
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.timeline-axis {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--axis-color, #666);
+  transform: translateY(-50%);
+}
+
+.summary-card {
+  position: absolute;
+  width: 200px;
+  transform: translateX(-50%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summary-card.upper {
+  top: 10%;
+}
+
+.summary-card.lower {
+  bottom: 10%;
+}
+
+.summary-card.selected {
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.summary-card.faded {
+  opacity: 0.3;
+}
+
+.summary-card:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+.card-connector {
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  background: var(--connector-color, #666);
+  transform: translateX(-50%);
+}
+
+.summary-card.upper .card-connector {
+  top: 100%;
+  height: calc(50vh - 50% - 2px);
+}
+
+.summary-card.lower .card-connector {
+  bottom: 100%;
+  height: calc(50vh - 50% - 2px);
+}
+
+.card-content {
+  background: var(--card-bg, white);
+  border: 2px solid var(--card-border, #ddd);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.card-year {
+  font-size: 11px;
+  color: var(--text-secondary, #666);
+  margin-bottom: 4px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #000);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.keyword {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--keyword-bg, #f0f0f0);
+  border-radius: 4px;
+  color: var(--text-secondary, #666);
+}
+
+/* 모바일 반응형 (≤430px) */
+@media (max-width: 430px) {
+  .summary-card {
+    width: 160px;
+  }
+  
+  .card-content {
+    padding: 8px;
+  }
+  
+  .card-title {
+    font-size: 12px;
+  }
+  
+  .era-watermark {
+    font-size: 32px;
+  }
+}
